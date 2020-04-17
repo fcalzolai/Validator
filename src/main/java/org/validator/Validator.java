@@ -49,6 +49,14 @@ public class Validator<T, L, R> {
     return getValidations().get();
   }
 
+  public <U> Validation<Seq<L>, U> map(Function<? super Seq<R>, ? extends U> f) {
+    return getValidations().map(f);
+  }
+
+  public <U> Validation<U, Seq<R>> mapError(Function<? super Seq<L>, ? extends U> f) {
+    return getValidations().mapError(f);
+  }
+
   public Seq<R> getOrElseThrow(Function<Seq<L>, Throwable> supplier) throws Throwable {
     requireNonNull(supplier, "Supplier is null");
     if (getValidations().isEmpty()) {
