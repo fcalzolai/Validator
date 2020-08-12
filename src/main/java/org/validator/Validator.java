@@ -57,16 +57,7 @@ public class Validator<T, L, R> {
     return getValidations().mapError(f);
   }
 
-  public Seq<R> getOrElseThrow(Function<Seq<L>, Throwable> supplier) throws Throwable {
-    requireNonNull(supplier, "Supplier is null");
-    if (getValidations().isEmpty()) {
-      throw supplier.apply(getError());
-    } else {
-      return get();
-    }
-  }
-
-  public Seq<R> getOrElseThrow2(Function<String, Throwable> supplier) throws Throwable {
+  public <E extends Exception> Seq<R> getOrElseThrow(Function<String, E> supplier) throws E {
     requireNonNull(supplier, "Supplier is null");
     if (getValidations().isEmpty()) {
       String errMsg = getError()
@@ -77,15 +68,15 @@ public class Validator<T, L, R> {
     }
   }
 
-  public Seq<R> getOrElseThrow(Class<? extends Throwable> clazz) throws Throwable {
+  public <E extends Exception> Seq<R> getOrElseThrow(Class<? extends E> clazz) throws E {
     requireNonNull(clazz);
-    Function<String, Throwable> exceptionSupplier = (errMsg) -> {
+    Function<String, E> exceptionSupplier = (errMsg) -> {
       try {
         return clazz.getDeclaredConstructor().newInstance(errMsg);
       } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
     };
-    return getOrElseThrow2(exceptionSupplier);
+    return getOrElseThrow(exceptionSupplier);
   }
 }
