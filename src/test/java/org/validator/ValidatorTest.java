@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 public class ValidatorTest {
 
   @Test
-  public void getValidationsError() {
+  public void getValidationsWithError() {
     Validator<Integer, String, Boolean> booleanValidator = new Validator<>(List.of(1, 2, 3, 4), isGreaterThan(3));
 
     Validation<Seq<String>, Seq<Boolean>> validation = booleanValidator.getValidations();
