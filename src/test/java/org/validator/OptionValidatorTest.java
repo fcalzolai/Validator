@@ -1,6 +1,7 @@
 package org.validator;
 
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,32 +9,30 @@ import org.junit.Test;
 import java.util.List;
 import java.util.function.Function;
 
-import static io.vavr.control.Validation.invalid;
-import static io.vavr.control.Validation.valid;
 import static org.junit.Assert.fail;
 
 public class OptionValidatorTest {
 
   private static final List<Integer> ITEMS = List.of(1, 2, 3, 4);
-  private static final Validator<Integer, String, Boolean> GREATER_THAN_0 = new Validator<>(ITEMS, isGreaterThan(0));
-  private static final Validator<Integer, String, Boolean> GREATER_THAN_3 = new Validator<>(ITEMS, isGreaterThan(3));
+  private static final OptionValidator<Integer, String> GREATER_THAN_0 = new OptionValidator<>(ITEMS, isGreaterThan(0));
+  private static final OptionValidator<Integer, String> GREATER_THAN_3 = new OptionValidator<>(ITEMS, isGreaterThan(3));
 
   @Test
   public void getValidationsError() {
-    Validation<Seq<String>, Seq<Boolean>> validation = GREATER_THAN_3.getValidations();
+    Validation<Seq<Option<String>>, Seq<Option<String>>> validation = GREATER_THAN_3.getValidations();
     Assert.assertEquals(3, validation.getError().size());
   }
 
   @Test
   public void getValidations() {
-    Validation<Seq<String>, Seq<Boolean>> validation = GREATER_THAN_0.getValidations();
+    Validation<Seq<Option<String>>, Seq<Option<String>>> validation = GREATER_THAN_0.getValidations();
     Assert.assertEquals(ITEMS.size(), validation.get().size());
   }
 
   @Test
   public void getOrElseThrow() {
     try {
-      Seq<Boolean> res = GREATER_THAN_0.getOrElseThrow((errors) -> new Exception());
+      Seq<Option<String>> res = GREATER_THAN_0.getOrElseThrow((errors) -> new Exception());
       Assert.assertEquals(ITEMS.size(), res.size());
     } catch (Throwable throwable) {
       fail(throwable.getMessage());
@@ -42,7 +41,7 @@ public class OptionValidatorTest {
 
   @Test
   public void testGetOrElseThrow() {
-    Seq<Boolean> res = null;
+    Seq<Option<String>> res = null;
     try {
       res = GREATER_THAN_0.getOrElseThrow(Exception.class);
     } catch (Throwable throwable) {
@@ -52,9 +51,9 @@ public class OptionValidatorTest {
 
   }
 
-  private static Function<Integer, Validation<String, Boolean>> isGreaterThan(int greaterThan) {
+  private static Function<Integer, Option<String>> isGreaterThan(int greaterThan) {
     return i -> i > greaterThan
-            ? valid(true)
-            : invalid(String.format("%s is not greater than %s", i, greaterThan));
+            ? Option.of(Integer.toString(i))
+            : Option.none();
   }
 }
