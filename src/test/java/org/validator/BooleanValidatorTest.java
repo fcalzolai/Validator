@@ -10,21 +10,19 @@ import java.util.function.Function;
 
 public class BooleanValidatorTest {
 
+  private static final List<Integer> ITEMS = List.of(1, 2, 3, 4);
+  private static final BooleanValidator<Integer> GREATER_THAN_0 = new BooleanValidator<>(ITEMS, isGreaterThan(0));
+  private static final BooleanValidator<Integer> GREATER_THAN_3 = new BooleanValidator<>(ITEMS, isGreaterThan(3));
+
   @Test
   public void getValidations() {
-    List<Integer> items = List.of(1, 2, 3, 4);
-    BooleanValidator<Integer> booleanValidator = new BooleanValidator<>(items, isGreaterThan(0));
-
-    Validation<Seq<Boolean>, Seq<Boolean>> validations = booleanValidator.getValidations();
-    Assert.assertEquals(items.size(), validations.get().size());
+    Validation<Seq<Boolean>, Seq<Boolean>> validations = GREATER_THAN_0.getValidations();
+    Assert.assertEquals(ITEMS.size(), validations.get().size());
   }
 
   @Test
   public void getValidationsWithErrors() {
-    List<Integer> items = List.of(1, 2, 3, 4);
-    BooleanValidator<Integer> booleanValidator = new BooleanValidator<>(items, isGreaterThan(3));
-
-    Validation<Seq<Boolean>, Seq<Boolean>> validations = booleanValidator.getValidations();
+    Validation<Seq<Boolean>, Seq<Boolean>> validations = GREATER_THAN_3.getValidations();
     Assert.assertEquals(3, validations.getError().size());
   }
 

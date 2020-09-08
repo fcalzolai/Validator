@@ -10,35 +10,35 @@ import java.util.function.Function;
 
 public class ThrowableValidatorTest {
 
+  private static final List<Integer> ITEMS = List.of(1, 2, 3, 4);
+  private static final List<Integer> ITEMS_WITH_ZERO = List.of(1, 2, 0, 4);
+  private static final ThrowableValidator<Integer, Integer> DIVIDED_BY_3 = new ThrowableValidator<>(ITEMS, dividedBy(3));
+  private static final ThrowableValidator<Integer, Integer> DIVIDED_BY_0 = new ThrowableValidator<>(ITEMS, dividedBy(0));
+  private static final ThrowableValidator<Integer, Integer> NUMERATOR_DIVIDED_BY_3 = new ThrowableValidator<>(ITEMS_WITH_ZERO, numeratorDividedBy(3));
+
   @Test
   public void getValidations() {
-    ThrowableValidator<Integer, Integer> validator = new ThrowableValidator<>(List.of(1, 2, 3, 4), divededBy(3));
-
-    Validation<Seq<Throwable>, Seq<Integer>> validations = validator.getValidations();
+    Validation<Seq<Throwable>, Seq<Integer>> validations = DIVIDED_BY_3.getValidations();
     Assert.assertEquals(4, validations.get().size());
   }
 
   @Test
   public void getValidationsWithError() {
-    ThrowableValidator<Integer, Integer> validator = new ThrowableValidator<>(List.of(1, 2, 3, 4), divededBy(0));
-
-    Validation<Seq<Throwable>, Seq<Integer>> validations = validator.getValidations();
+    Validation<Seq<Throwable>, Seq<Integer>> validations = DIVIDED_BY_0.getValidations();
     Assert.assertEquals(4, validations.getError().size());
   }
 
   @Test
   public void getValidationsWithOneError() {
-    ThrowableValidator<Integer, Integer> validator = new ThrowableValidator<>(List.of(1, 2, 0, 4), numeratorDivededBy(3));
-
-    Validation<Seq<Throwable>, Seq<Integer>> validations = validator.getValidations();
+    Validation<Seq<Throwable>, Seq<Integer>> validations = NUMERATOR_DIVIDED_BY_3.getValidations();
     Assert.assertEquals(1, validations.getError().size());
   }
 
-  private static Function<Integer, Integer> divededBy(int denominator) {
+  private static Function<Integer, Integer> dividedBy(int denominator) {
     return i -> i / denominator;
   }
 
-  private static Function<Integer, Integer> numeratorDivededBy(int numerator) {
+  private static Function<Integer, Integer> numeratorDividedBy(int numerator) {
     return i -> numerator / i;
   }
 

@@ -14,31 +14,27 @@ import static org.junit.Assert.fail;
 
 public class OptionValidatorTest {
 
+  private static final List<Integer> ITEMS = List.of(1, 2, 3, 4);
+  private static final Validator<Integer, String, Boolean> GREATER_THAN_0 = new Validator<>(ITEMS, isGreaterThan(0));
+  private static final Validator<Integer, String, Boolean> GREATER_THAN_3 = new Validator<>(ITEMS, isGreaterThan(3));
+
   @Test
   public void getValidationsError() {
-    Validator<Integer, String, Boolean> booleanValidator = new Validator<>(List.of(1, 2, 3, 4), isGreaterThan(3));
-
-    Validation<Seq<String>, Seq<Boolean>> validation = booleanValidator.getValidations();
+    Validation<Seq<String>, Seq<Boolean>> validation = GREATER_THAN_3.getValidations();
     Assert.assertEquals(3, validation.getError().size());
   }
 
   @Test
   public void getValidations() {
-    List<Integer> items = List.of(1, 2, 3, 4);
-    Validator<Integer, String, Boolean> booleanValidator = new Validator<>(items, isGreaterThan(0));
-
-    Validation<Seq<String>, Seq<Boolean>> validation = booleanValidator.getValidations();
-    Assert.assertEquals(items.size(), validation.get().size());
+    Validation<Seq<String>, Seq<Boolean>> validation = GREATER_THAN_0.getValidations();
+    Assert.assertEquals(ITEMS.size(), validation.get().size());
   }
 
   @Test
   public void getOrElseThrow() {
-    List<Integer> items = List.of(1, 2, 3, 4);
-    Validator<Integer, String, Boolean> booleanValidator = new Validator<>(items, isGreaterThan(0));
-
     try {
-      Seq<Boolean> res = booleanValidator.getOrElseThrow((errors) -> new Exception());
-      Assert.assertEquals(items.size(), res.size());
+      Seq<Boolean> res = GREATER_THAN_0.getOrElseThrow((errors) -> new Exception());
+      Assert.assertEquals(ITEMS.size(), res.size());
     } catch (Throwable throwable) {
       fail(throwable.getMessage());
     }
@@ -46,16 +42,13 @@ public class OptionValidatorTest {
 
   @Test
   public void testGetOrElseThrow() {
-    List<Integer> items = List.of(1, 2, 3, 4);
-    Validator<Integer, String, Boolean> booleanValidator1 = new Validator<>(items, isGreaterThan(0));
-
     Seq<Boolean> res = null;
     try {
-      res = booleanValidator1.getOrElseThrow(Exception.class);
+      res = GREATER_THAN_0.getOrElseThrow(Exception.class);
     } catch (Throwable throwable) {
       fail(throwable.getMessage());
     }
-    Assert.assertEquals(items.size(), res.size());
+    Assert.assertEquals(ITEMS.size(), res.size());
 
   }
 
